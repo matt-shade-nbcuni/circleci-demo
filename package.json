@@ -1,0 +1,28 @@
+{
+  "name": "general-assembly",
+  "version": "1.0.0",
+  "description": "demo for general assembly",
+  "main": "index.js",
+  "dependencies": {
+    "g": "^2.0.1",
+    "http-server": "^0.12.1",
+    "mocha": "^7.1.1",
+    "npm": "^6.14.3",
+    "surge": "^0.21.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "mocha",
+    "start": "node ./src/assets/index.php"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rebekahwhittle/generalassembly-demo.git"
+  },
+  "author": "rebekahwhittle",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rebekahwhittle/generalassembly-demo/issues"
+  },
+  "homepage": "https://github.com/rebekahwhittle/generalassembly-demo#readme"
+}
