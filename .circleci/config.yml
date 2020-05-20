@@ -61,7 +61,16 @@ jobs:
           path: test
       - store_artifacts:
           path: test 
-    
+
+  docker: 
+    docker: 
+     - image: circleci/node:9.8.0-stretch-browsers 
+    steps: 
+      - checkout 
+      - setup_remote_docker: 
+          docker_layer_caching: true 
+      - run: docker build .  
+
   env_exp: 
     executor:
       name: node
@@ -114,6 +123,9 @@ workflows:
           context: HASHICORP_DEMO
           requires: 
             - build
+      - docker:
+          requires: 
+            - test
       - approval:
           type: approval
           filters:
