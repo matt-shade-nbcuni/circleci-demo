@@ -63,10 +63,11 @@ jobs:
           path: test 
 
   docker_build:
+    docker: 
+      - image: circleci/node:9.8.0-stretch-browsers 
     steps:
       - checkout
-      machine:
-          # docker_layer_caching: true 
+      - setup_remote_docker
       - run:
           name: Build Docker image
           command: docker build -t circleci/elixir:example .
