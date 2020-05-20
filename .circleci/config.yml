@@ -69,7 +69,7 @@ jobs:
       - checkout
       - run:
           name: build Elixir image
-          command: docker build -t circleci/elixir:example .
+          command: docker build -t circleci/elixir:1.6.5 .
 
   env_exp: 
     executor:
