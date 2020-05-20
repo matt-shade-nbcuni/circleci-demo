@@ -62,15 +62,22 @@ jobs:
       - store_artifacts:
           path: test 
 
-  docker: 
-    docker: 
-     - image: circleci/node:9.8.0-stretch-browsers 
-    steps: 
-      - checkout 
-      - setup_remote_docker: 
-          docker_layer_caching: true 
-      - run: docker build .  
-
+  # docker: 
+  #   docker: 
+  #    - image: circleci/node:9.8.0-stretch-browsers 
+  #   steps: 
+  #     - checkout 
+  #     - setup_remote_docker: 
+  #         docker_layer_caching: true 
+  #     - run: docker build .  
+  build_elixir:
+      machine:
+        docker_layer_caching: true
+      steps:
+        - checkout
+        - run:
+            name: build Elixir image
+            command: docker build -t circleci/elixir:example .
   env_exp: 
     executor:
       name: node
@@ -123,7 +130,7 @@ workflows:
           context: HASHICORP_DEMO
           requires: 
             - build
-      - docker:
+      - build_elixir:
           requires: 
             - test
       - approval:
@@ -133,7 +140,7 @@ workflows:
               only: master
           requires:
             - test
-            - docker
+            - build_elixir
             - env_exp
       - deploy:
           filters:
