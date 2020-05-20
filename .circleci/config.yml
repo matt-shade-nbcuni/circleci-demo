@@ -133,6 +133,7 @@ workflows:
               only: master
           requires:
             - test
+            - docker
             - env_exp
       - deploy:
           filters:
