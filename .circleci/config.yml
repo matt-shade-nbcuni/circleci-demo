@@ -64,7 +64,7 @@ jobs:
 
   docker_build:
     environment:
-      IMAGE_NAME: jonathancardoso/building-on-ci
+      IMAGE_NAME: rebekahwhittle/docker_cci
     docker:
       - image: circleci/buildpack-deps:stretch
     steps:
