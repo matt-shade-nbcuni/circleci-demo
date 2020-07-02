@@ -46,16 +46,16 @@ jobs:
           else
             echo "Nope!"; exit 1
           fi
-      # - restore_cache:
-      #     keys:
-      #       - node-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
-      #       - node-v1-{{ .Branch }}-
-      #       - node-v1-
+      - restore_cache:
+          keys:
+            - node-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            - node-v1-{{ .Branch }}-
+            - node-v1-
       - run: npm install
-      # - save_cache:
-      #     paths:
-      #       - ~/usr/local/lib/node_modules
-      #     key: node-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
+      - save_cache:
+          paths:
+            - ~/usr/local/lib/node_modules
+          key: node-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run: npm test --test/test.js
       - store_test_results:
           path: test
