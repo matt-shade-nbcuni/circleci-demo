@@ -119,7 +119,7 @@ workflows:
           type: approval
           filters:
             branches:
-              only: master
+              only: main
           requires:
             - test
             - env_exp
@@ -127,6 +127,6 @@ workflows:
           context: CONTEXT_DEMO 
           filters:
             branches:
-              only: master
+              only: main
           requires:
             - approval
