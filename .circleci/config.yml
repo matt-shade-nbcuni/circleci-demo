@@ -1,8 +1,5 @@
 version: 2.1
 
-orbs:
-  hello-build: circleci/hello-build@0.0.14
-
 executors:
   node:
     docker: 
@@ -51,27 +48,25 @@ jobs:
             - node-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
             - node-v1-{{ .Branch }}-
             - node-v1-
-      - run: npm install
       - save_cache:
-          paths:
-            - ~/usr/local/lib/node_modules
-          key: node-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
-      - run: npm test --test/test.js
+            paths:
+              - ~/usr/local/lib/node_modules
+            key: node-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
+      - run:
+          name: "split tests"
+          command: echo "splitting tests but not really 😩🤦🏼‍♀️"
+          # command: circleci tests split --split-by=timings --show-counts test/test.js | xargs -n 1 echo
+      - run: npm install 
+      - run: mkdir junit
+      - run:
+          command: npm test 
+          environment:
+            MOCHA_FILE: junit/test-results.xml
+          when: always
       - store_test_results:
-          path: test
+          path: junit
       - store_artifacts:
-          path: test 
-
-  # docker_build:
-  #   docker: 
-  #     - image: circleci/node:9.8.0-stretch-browsers 
-  #   steps:
-  #     - checkout
-  #     - setup_remote_docker:
-  #         docker_layer_caching: true 
-  #     - run:
-  #         name: Build Docker image
-  #         command: docker build -t circleci/elixir:example .
+          path: junit
 
   env_exp: 
     executor:
@@ -112,9 +107,6 @@ jobs:
 
 workflows: 
   version: 2.1
-  hello_world: 
-    jobs: 
-      - hello-build/hello-build
   build_test_deploy: 
     jobs: 
       - build
@@ -125,9 +117,6 @@ workflows:
           context: HASHICORP_DEMO
           requires: 
             - build
-      - docker_build:
-          requires: 
-            - test
       - approval:
           type: approval
           filters:
@@ -135,7 +124,6 @@ workflows:
               only: master
           requires:
             - test
-            # - docker_build
             - env_exp
       - deploy:
           filters:
@@ -143,4 +131,3 @@ workflows:
               only: master
           requires:
             - approval
-
