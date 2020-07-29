@@ -101,7 +101,7 @@ jobs:
     steps: 
       - checkout 
       - run: npm install surge
-      - run: ./node_modules/surge/lib/cli.js --project ./ --domain $SURGE_DOMAIN.surge.sh
+      - run: ./node_modules/surge/lib/cli.js --project ./src/assets --domain $SURGE_DOMAIN.surge.sh
 
 workflows: 
   version: 2.1
