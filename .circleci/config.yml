@@ -1,8 +1,5 @@
 version: 2.1
 
-orbs:
-  hello-build: circleci/hello-build@0.0.14
-
 executors:
   node:
     docker: 
@@ -46,32 +43,26 @@ jobs:
           else
             echo "Nope!"; exit 1
           fi
-      # - restore_cache:
-      #     keys:
-      #       - node-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
-      #       - node-v1-{{ .Branch }}-
-      #       - node-v1-
-      - run: npm install
-      # - save_cache:
-      #     paths:
-      #       - ~/usr/local/lib/node_modules
-      #     key: node-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
-      - run: npm test --test/test.js
-      - store_test_results:
-          path: test
-      - store_artifacts:
-          path: test 
-
-  docker_build:
-    docker: 
-      - image: circleci/node:9.8.0-stretch-browsers 
-    steps:
-      - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true 
+      - restore_cache:
+          keys:
+            - node-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            - node-v1-{{ .Branch }}-
+            - node-v1-
+      - save_cache:
+            paths:
+              - ~/usr/local/lib/node_modules
+            key: node-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
+      - run: npm install 
+      - run: mkdir junit
       - run:
-          name: Build Docker image
-          command: docker build -t circleci/elixir:example .
+          command: npm test 
+          environment:
+            MOCHA_FILE: junit/test-results.xml
+          when: always
+      - store_test_results:
+          path: junit
+      - store_artifacts:
+          path: junit
 
   env_exp: 
     executor:
@@ -108,13 +99,12 @@ jobs:
     executor:
       name: node
     steps: 
-      - run: echo "deploying"
+      - checkout 
+      - run: npm install surge
+      - run: ./node_modules/surge/lib/cli.js --project ./ --domain $DOMAIN.surge.sh
 
 workflows: 
   version: 2.1
-  hello_world: 
-    jobs: 
-      - hello-build/hello-build
   build_test_deploy: 
     jobs: 
       - build
@@ -125,9 +115,6 @@ workflows:
           context: HASHICORP_DEMO
           requires: 
             - build
-      - docker_build:
-          requires: 
-            - test
       - approval:
           type: approval
           filters:
@@ -135,12 +122,11 @@ workflows:
               only: master
           requires:
             - test
-            - docker_build
             - env_exp
       - deploy:
+          context: CONTEXT_DEMO 
           filters:
             branches:
               only: master
           requires:
             - approval
-
