@@ -52,10 +52,6 @@ jobs:
             paths:
               - ~/usr/local/lib/node_modules
             key: node-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
-      # - run:
-      #     name: "split tests"
-          command: echo "splitting tests but not really 😩🤦🏼‍♀️"
-      #     # command: circleci tests split --split-by=timings --show-counts test/test.js | xargs -n 1 echo
       - run: npm install 
       - run: mkdir junit
       - run:
@@ -102,6 +98,10 @@ jobs:
   deploy:     
     executor:
       name: node
+    steps: 
+      - checkout 
+      - run: npm install surge
+      - run: ./node_modules/surge/lib/cli.js --project ./ --domain $DOMAIN.surge.sh
 
 workflows: 
   version: 2.1
@@ -124,6 +124,7 @@ workflows:
             - test
             - env_exp
       - deploy:
+          context: CONTEXT_DEMO 
           filters:
             branches:
               only: master
