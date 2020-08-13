@@ -1,10 +1,16 @@
 version: 2.1
 
+### Orbs
+orbs:
+  aws-ecr: circleci/aws-ecr@6.12.2
+
+### Executors
 executors:
   node:
     docker: 
       - image: circleci/node:latest
 
+### Jobs
 jobs:
   build: 
     executor:
@@ -67,6 +73,7 @@ jobs:
   env_exp: 
     executor:
       name: node
+    resource_class: large
     steps:
       - checkout
       - run: 
@@ -103,6 +110,7 @@ jobs:
       - run: npm install surge
       - run: ./node_modules/surge/lib/cli.js --project ./src/assets --domain $SURGE_DOMAIN.surge.sh
 
+### Workflows
 workflows: 
   version: 2.1
   build_test_deploy: 
