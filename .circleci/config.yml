@@ -71,8 +71,8 @@ jobs:
           path: junit
 
   env_exp: 
-    executor:
-      name: node
+    docker: 
+      - image: circleci/node:latest
     resource_class: large
     steps:
       - checkout
