@@ -1,8 +1,8 @@
 version: 2.1
 
 ### Orbs
-orbs:
-  aws-ecr: circleci/aws-ecr@6.12.2
+# orbs:
+#   aws-ecr: circleci/aws-ecr@6.12.2
 
 ### Executors
 executors:
