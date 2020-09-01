@@ -36,24 +36,24 @@ jobs:
             - ~/.cache/yarn
           key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
 
-   # Cypress unit testing
-   test: 
-      executor:
-        name: node
-      parallelism: 6
-      steps: 
-        - checkout
-        - restore_cache:
-            keys:
-              - yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
-              - yarn-packages-v1-{{ .Branch }}-
-              - yarn-packages-v1-
-        - run: yarn install
-        - save_cache:
-            paths:
-              - ~/.cache/yarn
-            key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
-        - command: yarn cypress run test
+  # Cypress unit testing
+  test: 
+    executor:
+      name: node
+    parallelism: 6
+    steps: 
+      - checkout
+      - restore_cache:
+          keys:
+            - yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - yarn-packages-v1-{{ .Branch }}-
+            - yarn-packages-v1-
+      - run: yarn install
+      - save_cache:
+          paths:
+            - ~/.cache/yarn
+          key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run: yarn cypress run test
 
 
 ### Workflows ###
