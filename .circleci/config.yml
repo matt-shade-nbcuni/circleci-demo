@@ -1,20 +1,25 @@
 version: 2.1
 
-### Executors
+### Executors ###
 executors:
   node:
     docker: 
       - image: circleci/node:latest
 
-### Jobs
+### Jobs ###
 jobs:
+  
+  # Building application & cypress install
   build: 
     executor:
       name: node
     resource_class: small
     steps:
       - checkout
+      - node/install-packages:
+          override-ci-command: CYPRESS_INSTALL_BINARY=0 npm ci
 
+  # Lint using eslint
   lint: 
     executor:
       name: node
@@ -32,7 +37,8 @@ jobs:
             - ~/.cache/yarn
           key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
 
-### Workflows
+
+### Workflows ###
 workflows: 
   version: 2.1
   build_test_deploy: 
@@ -41,3 +47,8 @@ workflows:
       - lint: 
           requires: 
             - build
+
+### Orbs ###
+orbs:
+  cypress: cypress-io/cypress@1.25.1
+  node: circleci/node@3.0.1
