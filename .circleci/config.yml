@@ -38,8 +38,8 @@ jobs:
 
   # Cypress unit testing
   test: 
-    executor:
-      name: node
+    docker: 
+      - image: cypress/base:10
     parallelism: 6
     steps: 
       - checkout
@@ -48,7 +48,7 @@ jobs:
             - yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
             - yarn-packages-v1-{{ .Branch }}-
             - yarn-packages-v1-
-      - run: yarn install
+      - run: yarn install --frozen-lockfile
       - save_cache:
           paths:
             - ~/.cache/yarn
