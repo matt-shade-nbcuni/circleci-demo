@@ -38,4 +38,6 @@ workflows:
   build_test_deploy: 
     jobs: 
       - build
-      - lint
+      - lint: 
+          requires: 
+            - build
