@@ -4,7 +4,7 @@ version: 2.1
 executors:
   node:
     docker: 
-      - image: circleci/node:latest
+      - image: cimg/node:14.0.0
 
 ### Jobs ###
 jobs:
@@ -36,6 +36,25 @@ jobs:
             - ~/.cache/yarn
           key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
 
+   # Cypress unit testing
+   test: 
+      executor:
+        name: node
+      parallelism: 6
+      steps: 
+        - checkout
+        - restore_cache:
+            keys:
+              - yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+              - yarn-packages-v1-{{ .Branch }}-
+              - yarn-packages-v1-
+        - run: yarn install
+        - save_cache:
+            paths:
+              - ~/.cache/yarn
+            key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+        - command: yarn cypress run test
+
 
 ### Workflows ###
 workflows: 
@@ -46,8 +65,10 @@ workflows:
       - lint: 
           requires: 
             - build
+      - test: 
+          requires:
+            - lint
 
 ### Orbs ###
 orbs:
   cypress: cypress-io/cypress@1.25.1
-  node: circleci/node@3.0.1
