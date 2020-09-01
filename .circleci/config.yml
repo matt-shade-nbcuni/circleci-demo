@@ -12,9 +12,24 @@ jobs:
     executor:
       name: node
     resource_class: small
-    working_directory: /tmp
     steps:
       - checkout
+
+  lint: 
+    executor:
+      name: node
+    steps:
+      - restore_cache:
+          keys:
+            - yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - yarn-packages-v1-{{ .Branch }}-
+            - yarn-packages-v1-
+      - run: yarn lint
+      - save_cache:
+          paths:
+            - ~/.cache/yarn
+          key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+        
 
 ### Workflows
 workflows: 
@@ -22,3 +37,4 @@ workflows:
   build_test_deploy: 
     jobs: 
       - build
+      - lint
