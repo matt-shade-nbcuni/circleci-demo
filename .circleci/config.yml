@@ -19,17 +19,18 @@ jobs:
     executor:
       name: node
     steps:
+      - checkout
       - restore_cache:
           keys:
             - yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
             - yarn-packages-v1-{{ .Branch }}-
             - yarn-packages-v1-
+      - run: yarn install
       - run: yarn lint
       - save_cache:
           paths:
             - ~/.cache/yarn
           key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
-        
 
 ### Workflows
 workflows: 
