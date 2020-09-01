@@ -17,16 +17,23 @@ module.exports = {
     "plugins": [
         "react"
     ],
+    "globals": {
+        "process": "writable",
+        "var2": "readonly"
+    },
     "rules": {
-        "comma-dangle": [2, "never"],
-        "object-curly-spacing": [2, "never"],
-        "object-shorthand": [2, "always"],
-        "array-bracket-spacing": [2, "never"],
-        "max-len": [2, 120, {
-            "ignoreStrings": true,
-            "ignoreTemplateLiterals": true,
-            "ignoreComments": true,
+        "react/no-unescaped-entities": 0,
+        "block-spacing": ["error", "always"],
+        "brace-style": ["error", "1tbs", { "allowSingleLine": true }],
+        "camelcase": ["error", { "properties": "never" }],
+        "comma-dangle": ["error", {
+          "arrays": "never",
+          "objects": "never",
+          "imports": "never",
+          "exports": "never",
+          "functions": "never"
         }],
-        "consistent-return": 0,
+        "comma-spacing": ["error", { "before": false, "after": true }],
+        "comma-style": ["error", "last"],
     }
 };
