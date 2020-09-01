@@ -1,9 +1,5 @@
 version: 2.1
 
-### Orbs
-# orbs:
-#   aws-ecr: circleci/aws-ecr@6.12.2
-
 ### Executors
 executors:
   node:
@@ -18,100 +14,7 @@ jobs:
     resource_class: small
     working_directory: /tmp
     steps:
-      - run: mkdir -p workspace
-      - run: echo "Hello, world!" > workspace/echo-output
-      - persist_to_workspace:
-          root: workspace
-          paths:
-            - echo-output
-      - run:
-          name: Creating Dummy Artifacts
-          command: |
-            echo "my artifact file" > /tmp/artifact-1;
-            mkdir /tmp/artifacts;
-            echo "my artifact files in a dir" > /tmp/artifacts/artifact-2;
-      - store_artifacts:
-          path: /tmp/artifact-1
-          destination: artifact-file
-      - store_artifacts:
-          path: /tmp/artifacts
-
-  test: 
-    executor:
-      name: node
-    parallelism: 4
-    resource_class: large
-    steps:
       - checkout
-      - attach_workspace:
-          at: /tmp/workspace
-      - run: |
-          if [[ `cat /tmp/workspace/echo-output` == "Hello, world!" ]]; then
-            echo "It worked!";
-          else
-            echo "Nope!"; exit 1
-          fi
-      - restore_cache:
-          keys:
-            - node-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
-            - node-v1-{{ .Branch }}-
-            - node-v1-
-      - save_cache:
-            paths:
-              - ~/usr/local/lib/node_modules
-            key: node-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
-      - run: npm install 
-      - run: mkdir junit
-      - run:
-          command: npm test 
-          environment:
-            MOCHA_FILE: junit/test-results.xml
-          when: always
-      - store_test_results:
-          path: junit
-      - store_artifacts:
-          path: junit
-
-  env_exp: 
-    docker: 
-      - image: circleci/node:latest
-    resource_class: large
-    steps:
-      - checkout
-      - run: 
-          name: "Setup custom environment variables"
-          command: echo 'export MY_ENV_VAR="FOO"' >> $BASH_ENV
-      - run: 
-          name: "What branch am I on?"
-          command: echo ${CIRCLE_BRANCH}
-      - run:
-          name: "What branch am I on now?"
-          command: echo $CIRCLE_BRANCH
-      - run:
-          name: "What was my custom environment variable?"
-          command: echo ${MY_ENV_VAR}
-      - run:
-          name: "Print an env var stored in the Project"
-          command: echo ${PROJECT_ENV_VAR}
-      - run:
-          name: "Print an env var stored in a Context"
-          command: echo ${CONTEXT_ENV_VAR}
-
-
-  approval:     
-    executor:
-      name: node
-    steps: 
-      - run: echo "please approve this job"
-
-  deploy:     
-    executor:
-      name: node
-    resource_class: xlarge
-    steps: 
-      - checkout 
-      - run: npm install surge
-      - run: ./node_modules/surge/lib/cli.js --project ./src/assets --domain $SURGE_DOMAIN.surge.sh
 
 ### Workflows
 workflows: 
@@ -119,25 +22,3 @@ workflows:
   build_test_deploy: 
     jobs: 
       - build
-      - test: 
-          requires: 
-            - build
-      - env_exp: 
-          context: HASHICORP_DEMO
-          requires: 
-            - build
-      - approval:
-          type: approval
-          filters:
-            branches:
-              only: main
-          requires:
-            - test
-            - env_exp
-      - deploy:
-          context: CONTEXT_DEMO 
-          filters:
-            branches:
-              only: main
-          requires:
-            - approval
