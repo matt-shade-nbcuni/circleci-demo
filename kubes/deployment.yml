@@ -1,30 +1,19 @@
 apiVersion: apps/v1 
 kind: Deployment
 metadata:
-  name: circleci-demo-prod
+  name: planted-prod
 spec:
   selector:
     matchLabels:
-      app: circleci-demo-prod
+      app: planted-prod
   replicas: 2
   template:
     metadata:
       labels:
-        app: circleci-demo-prod
+        app: planted-prod
     spec:
       containers:
-      - name: elated-lederberg
-        image: gcr.io/circleci-demo-286921/rdw/circleci-demo
+      - name: planted-prod
+        image: gcr.io/circleci-demo-286921/planted-app:v1
         ports:
         - containerPort: 3000
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: circleci-demo-prod
-spec:
-  type: LoadBalancer
-  selector:
-    app: circleci-demo-prod
-  ports:
-      - port: 3000
