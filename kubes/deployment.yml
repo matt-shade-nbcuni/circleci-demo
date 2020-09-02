@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: planted-prod
-        image: gcr.io/circleci-demo-286921/planted-app:v1
+        image: gcr.io/circleci-demo-286921/planted-app:v4
         ports:
-        - containerPort: 3000
+        - containerPort: 80
