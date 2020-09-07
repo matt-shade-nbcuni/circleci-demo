@@ -16,8 +16,7 @@ jobs:
     resource_class: small
     steps:
       - checkout
-      - node/install:
-          install-yarn: true
+      - run: yarn install
       - run: CYPRESS_INSTALL_BINARY=0 yarn add cypress
 
   # Lint using eslint
