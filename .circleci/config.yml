@@ -9,13 +9,15 @@ executors:
 ### Jobs ###
 jobs:
   
-  # Building application & cypress install
+  # Building application yarn install & cypress install
   build: 
     executor:
       name: node
     resource_class: small
     steps:
       - checkout
+      - node/install:
+          install-yarn: true
       - run: CYPRESS_INSTALL_BINARY=0 yarn add cypress
 
   # Lint using eslint
@@ -59,6 +61,34 @@ jobs:
       - store_artifacts:
           path: ~/project/tests/junit.xml
 
+  # Build then push docker image to gcr
+  build-docker-image: 
+    machine: true
+    resource_class: large
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - gcp-gcr/gcr-auth
+      - gcp-gcr/build-image:
+          image: planted-app
+          tag: "v4"
+      - gcp-gcr/push-image:
+          image: planted-app
+          tag: "v4"
+  
+  # Deploy application to gke
+  deploy: 
+    machine: true
+    resource_class: large
+    steps:
+      - gke/install
+      - gke/rollout-image:
+          cluster: planted-cluster
+          deployment: planted-prod
+          container: planted-prod
+          image: gcr.io/circleci-demo-286921/planted-app:v4
+
 ### Workflows ###
 workflows: 
   version: 2.1
@@ -71,8 +101,20 @@ workflows:
       - test: 
           context: CYPRESS
           requires:
+            - build
+      - build-docker-image:
+          context: GCLOUD
+          requires: 
+            - test
             - lint
+      - deploy: 
+          context: GCLOUD
+          requires: 
+            - build-docker-image
 
 ### Orbs ###
 orbs:
+  gcp-gcr: circleci/gcp-gcr@0.7.1
+  gke: circleci/gcp-gke@1.1.0
+  node: circleci/node@4.0.0
   cypress: cypress-io/cypress@1.26.0
