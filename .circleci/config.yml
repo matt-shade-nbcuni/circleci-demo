@@ -92,13 +92,13 @@ workflows:
   build_test_deploy: 
     jobs: 
       - build
-      - lint: 
-          requires: 
-            - build
-      - test: 
-          context: CYPRESS
-          requires:
-            - build
+      # - lint: 
+      #     requires: 
+      #       - build
+      # - test: 
+      #     context: CYPRESS
+      #     requires:
+      #       - build
       - build-docker-image:
           context: GCLOUD
           requires: 
