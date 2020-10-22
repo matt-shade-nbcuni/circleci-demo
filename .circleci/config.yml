@@ -8,7 +8,6 @@ executors:
 
 ### Jobs ###
 jobs:
-  
   # Building application yarn install & cypress install
   build: 
     executor:
@@ -42,6 +41,7 @@ jobs:
     docker: 
       - image: cypress/base:10
     parallelism: 4
+    resource_class: large
     steps: 
       - checkout
       - restore_cache:
@@ -91,6 +91,7 @@ workflows:
   version: 2.1
   build_test_deploy: 
     jobs: 
+      - cypress/run
       - build
       - lint: 
           requires: 
@@ -104,10 +105,10 @@ workflows:
           requires: 
             - test
             - lint
-      - deploy: 
-          context: GCLOUD
-          requires: 
-            - build-docker-image
+      # - deploy: 
+      #     context: GCLOUD
+      #     requires: 
+      #       - build-docker-image
 
 ### Orbs ###
 orbs:
