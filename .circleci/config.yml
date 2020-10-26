@@ -105,10 +105,10 @@ workflows:
           requires: 
             - test
             - lint
-      # - deploy: 
-      #     context: GCLOUD
-      #     requires: 
-      #       - build-docker-image
+      - deploy: 
+          context: GCLOUD
+          requires: 
+            - build-docker-image
 
 ### Orbs ###
 orbs:
