@@ -63,7 +63,7 @@ jobs:
   # Build then push docker image to gcr
   build-docker-image: 
     machine: true
-    resource_class: large
+    resource_class: medium
     steps:
       - checkout
       - gcp-gcr/gcr-auth
@@ -77,7 +77,7 @@ jobs:
   # Deploy application to gke
   deploy: 
     machine: true
-    resource_class: large
+    resource_class: medium
     steps:
       - gke/install
       - gke/rollout-image:
