@@ -91,19 +91,11 @@ workflows:
   version: 2.1
   build_test_deploy: 
     jobs: 
-      # - build
-      # - lint: 
-      #     requires: 
-      #       - build
-      # - test: 
-      #     context: CYPRESS
-      #     requires:
-      #       - build
+      - build
       - build-docker-image:
           context: GCLOUD
           requires: 
-            # - test
-            # - lint
+            - build
       - deploy: 
           context: GCLOUD
           requires: 
