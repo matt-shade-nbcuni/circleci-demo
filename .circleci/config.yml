@@ -87,6 +87,7 @@ jobs:
           deployment: planted-prod
           container: planted-prod
           image: gcr.io/circleci-demo-286921/planted-app
+          tag: v4
 
 ### Workflows ###
 workflows: 
