@@ -53,7 +53,7 @@ jobs:
           paths:
             - ~/.cache/yarn
           key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      - run: yarn cypress run $CYPRESS_TEST --parallel
+      - run: yarn cypress run $CYPRESS_TEST
       - store_test_results:
           path: ~/project/tests
       - store_artifacts:
