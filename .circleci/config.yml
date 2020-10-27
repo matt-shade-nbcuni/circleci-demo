@@ -79,6 +79,9 @@ jobs:
     resource_class: medium
     steps:
       # - gke/install
+      - gke/update-kubeconfig-with-credentials:
+          cluster: planted-cluster
+          install-kubectl: true
       - gke/rollout-image:
           cluster: planted-cluster
           deployment: planted-prod
