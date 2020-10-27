@@ -12,7 +12,6 @@ jobs:
   build: 
     executor:
       name: node
-    resource_class: small
     steps:
       - checkout
       - run: yarn install
