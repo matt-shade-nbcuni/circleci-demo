@@ -74,7 +74,7 @@ jobs:
           tag: "v4"
   
   # Deploy application to gke
-  deploy: 
+  gke-deploy: 
     machine: true
     resource_class: medium
     steps:
@@ -95,15 +95,32 @@ workflows:
   build_test_deploy: 
     jobs: 
       - build
-      # - build-docker-image:
-      #     context: GCLOUD
-      #     requires: 
-      #       - build
-      - deploy: 
+      - lint:
+          requires:
+            - build
+      - test:
+          requires: 
+            - lint
+      - build-docker-image:
           context: GCLOUD
           requires: 
-            - build
-
+            - test
+      - hold-gke-deploy:
+          type: approval
+          requires: 
+            - build-docker-image
+          filters:
+            branches:
+              only:
+                - main
+      - gke-deploy: 
+          context: GCLOUD
+          requires: 
+            - hold-gke-deploy
+          filters:
+            branches:
+              only:
+                - main
 
 ### Orbs ###
 orbs:
