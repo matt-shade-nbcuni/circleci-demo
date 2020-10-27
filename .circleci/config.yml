@@ -79,10 +79,9 @@ jobs:
     resource_class: medium
     steps:
       - gcp-gcr/gcr-auth
-      # - gke/install
-      # - gke/update-kubeconfig-with-credentials:
-      #     cluster: planted-cluster
-      #     install-kubectl: true
+      - gke/update-kubeconfig-with-credentials:
+          cluster: planted-cluster
+          install-kubectl: true
       - gke/rollout-image:
           cluster: planted-cluster
           deployment: planted-prod
