@@ -79,7 +79,7 @@ jobs:
     machine: true
     resource_class: medium
     steps:
-      - gke/install
+      # - gke/install
       - gke/rollout-image:
           cluster: planted-cluster
           deployment: planted-prod
@@ -92,16 +92,16 @@ workflows:
   build_test_deploy: 
     jobs: 
       - build
-      - build-docker-image:
-          context: GCLOUD
-          requires: 
-            - build
+      # - build-docker-image:
+      #     context: GCLOUD
+      #     requires: 
+      #       - build
       - deploy: 
           context: GCLOUD
           requires: 
-            - build-docker-image
+            - build
 
-            
+
 ### Orbs ###
 orbs:
   gcp-gcr: circleci/gcp-gcr@0.7.1
