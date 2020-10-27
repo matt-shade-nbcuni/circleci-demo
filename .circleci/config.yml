@@ -79,15 +79,15 @@ jobs:
     resource_class: medium
     steps:
       - gcp-gcr/gcr-auth
-      - gke/install
-      - gke/update-kubeconfig-with-credentials:
-          cluster: planted-cluster
-          install-kubectl: true
+      # - gke/install
+      # - gke/update-kubeconfig-with-credentials:
+      #     cluster: planted-cluster
+      #     install-kubectl: true
       - gke/rollout-image:
           cluster: planted-cluster
           deployment: planted-prod
           container: planted-prod
-          image: gcr.io/circleci-demo-286921/planted-app:v4
+          image: gcr.io/circleci-demo-286921/planted-app
 
 ### Workflows ###
 workflows: 
