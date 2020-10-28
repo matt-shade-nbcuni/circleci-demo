@@ -89,11 +89,22 @@ jobs:
           image: gcr.io/circleci-demo-286921/planted-app
           tag: v4
 
+  # specific job to run if the branch that the commit is on has a pull request 
+  # Run job if branch has open PR        
+  hello-pr: 
+    executor: 
+      name: node
+    steps: 
+      - checkout
+      - echo "You are on $CIRCLE_BRANCH which has this PR $CIRCLE_PULL_REQUEST"
+      - echo "Hello PR"
+
 ### Workflows ###
 workflows: 
   version: 2.1
   build_test_deploy: 
     jobs: 
+      - hello-pr
       - build
       - lint:
           requires:
