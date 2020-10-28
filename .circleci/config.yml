@@ -62,7 +62,7 @@ jobs:
   # Build then push docker image to gcr
   build-docker-image: 
     machine: true
-    resource_class: medium
+    resource_class: large
     steps:
       - checkout
       - gcp-gcr/gcr-auth
@@ -76,7 +76,7 @@ jobs:
   # Deploy application to gke
   gke-deploy: 
     machine: true
-    resource_class: medium
+    resource_class: large
     steps:
       - gcp-gcr/gcr-auth
       - gke/update-kubeconfig-with-credentials:
@@ -100,11 +100,12 @@ workflows:
             - build
       - test:
           requires: 
-            - lint
+            - build
       - build-docker-image:
           context: GCLOUD
           requires: 
             - test
+            - lint
       - hold-gke-deploy:
           type: approval
           requires: 
