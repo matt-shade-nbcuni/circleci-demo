@@ -101,11 +101,20 @@ workflows:
       - test:
           requires: 
             - build
+          filters:
+            branches:
+              only:
+                - main
+                - /^(qa-*)$/
       - build-docker-image:
           context: GCLOUD
           requires: 
             - test
             - lint
+          filters:
+            branches:
+              only:
+                - main
       - hold-gke-deploy:
           type: approval
           requires: 
