@@ -98,7 +98,9 @@ jobs:
       - checkout
       - run: 
           name: Branch and PR
-          command: echo "You are on $CIRCLE_BRANCH which has this PR $CIRCLE_PULL_REQUEST"
+          command: echo "You are on $CIRCLE_BRANCH which has these PRs $CIRCLE_PULL_REQUESTS"
+          # if $CIRCLE_PULL_REQUEST is not empty then do something
+          # if CIRCLE_PULL_REQUESTS is NOT 0 then do something....
 
 ### Workflows ###
 workflows: 
@@ -106,7 +108,7 @@ workflows:
   build_test_deploy: 
     jobs: 
       - hello-pr
-      
+
       # - build
       # - lint:
       #     requires:
