@@ -99,15 +99,14 @@ jobs:
       - run: 
           name: Branch and PR
           command: echo $CIRCLE_PULL_REQUESTS
-          
           # if $CIRCLE_PULL_REQUEST is not empty then do something
           # if CIRCLE_PULL_REQUESTS is NOT 0 then do something....
-      # - run: |
-      #     if [[ `$CIRCLE_PULL_REQUESTS`  ]]; then
-      #       echo "YOU HAVE A PR";
-      #     else
-      #       echo "YOU DON'T HAVE A PR"; exit 1
-      #     fi
+      - run: |
+          if [[ `$CIRCLE_PULL_REQUEST` =~ [0-9] ]]; then
+            echo "YOU HAVE A PR";
+          else
+            echo "YOU DON'T HAVE A PR"; exit 1
+          fi
 
 ### Workflows ###
 workflows: 
