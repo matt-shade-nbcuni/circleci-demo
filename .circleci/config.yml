@@ -98,16 +98,15 @@ jobs:
       - checkout
       - run: 
           name: Branch and PR
-          command: echo "You are on $CIRCLE_BRANCH which has PR number $CIRCLE_PR_NUMBER located here $CIRCLE_PULL_REQUESTS"
+          command: echo $CIRCLE_PULL_REQUESTS
           # if $CIRCLE_PULL_REQUEST is not empty then do something
           # if CIRCLE_PULL_REQUESTS is NOT 0 then do something....
-          # if CIRCLE_PR_NUMBER is greater than or equal to 1 n >= 1
-      - run: |
-          if [[ `$CIRCLE_PR_NUMBER` > 0 ]]; then
-            echo "YOU HAVE A PR";
-          else
-            echo "YOU DON'T HAVE A PR"; exit 1
-          fi
+      # - run: |
+      #     if [[ `$CIRCLE_PULL_REQUESTS`  ]]; then
+      #       echo "YOU HAVE A PR";
+      #     else
+      #       echo "YOU DON'T HAVE A PR"; exit 1
+      #     fi
 
 ### Workflows ###
 workflows: 
