@@ -96,8 +96,9 @@ jobs:
       name: node
     steps: 
       - checkout
-      - echo "You are on $CIRCLE_BRANCH which has this PR $CIRCLE_PULL_REQUEST"
-      - echo "Hello PR"
+      - run: 
+          name: Branch and PR
+          command: echo "You are on $CIRCLE_BRANCH which has this PR $CIRCLE_PULL_REQUEST"
 
 ### Workflows ###
 workflows: 
