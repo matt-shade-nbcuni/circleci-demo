@@ -98,6 +98,10 @@ workflows:
       - lint:
           requires:
             - build
+          filters:
+            branches:
+              only:
+                - main
       - test:
           requires: 
             - build
@@ -111,26 +115,14 @@ workflows:
           requires: 
             - test
             - lint
-          filters:
-            branches:
-              only:
-                - main
       - hold-gke-deploy:
           type: approval
           requires: 
             - build-docker-image
-          filters:
-            branches:
-              only:
-                - main
       - gke-deploy: 
           context: GCLOUD
           requires: 
             - hold-gke-deploy
-          filters:
-            branches:
-              only:
-                - main
 
 ### Orbs ###
 orbs:
