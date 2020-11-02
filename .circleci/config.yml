@@ -101,9 +101,9 @@ jobs:
           command: echo $CIRCLE_PULL_REQUESTS
           # if $CIRCLE_PULL_REQUEST is not empty then do something
           # if CIRCLE_PULL_REQUESTS is NOT 0 then do something....
-          
+
       - run: |
-          if [[ `$CIRCLE_PULL_REQUEST` =~ [0-9] ]]; then
+          if [[ `$CIRCLE_PULL_REQUEST` \bpull\b ]]; then
             echo "YOU HAVE A PR";
           else
             echo "YOU DON'T HAVE A PR"; exit 1
@@ -114,32 +114,30 @@ workflows:
   version: 2.1
   build_test_deploy: 
     jobs: 
-      - hello-pr
-
-      # - build
-      # - lint:
-      #     requires:
-      #       - build
-      # - test:
-      #     requires: 
-      #       - build
-      # - build-docker-image:
-      #     context: GCLOUD
-      #     requires: 
-      #       - test
-      #       - lint
-      #     filters:
-      #       branches:
-      #         only:
-      #           - main
-      # - hold-gke-deploy:
-      #     type: approval
-      #     requires: 
-      #       - build-docker-image
-      # - gke-deploy: 
-      #     context: GCLOUD
-      #     requires: 
-      #       - hold-gke-deploy
+      - build
+      - lint:
+          requires:
+            - build
+      - test:
+          requires: 
+            - build
+      - build-docker-image:
+          context: GCLOUD
+          requires: 
+            - test
+            - lint
+          filters:
+            branches:
+              only:
+                - main
+      - hold-gke-deploy:
+          type: approval
+          requires: 
+            - build-docker-image
+      - gke-deploy: 
+          context: GCLOUD
+          requires: 
+            - hold-gke-deploy
 
 ### Orbs ###
 orbs:
