@@ -124,6 +124,7 @@ workflows:
           requires: 
             - hold-gke-deploy
 
+            
 ### Orbs ###
 orbs:
   gcp-gcr: circleci/gcp-gcr@0.7.1
