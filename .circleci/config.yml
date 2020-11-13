@@ -68,10 +68,10 @@ jobs:
       - gcp-gcr/gcr-auth
       - gcp-gcr/build-image:
           image: planted-app
-          tag: "v8"
+          tag: "v9"
       - gcp-gcr/push-image:
           image: planted-app
-          tag: "v8"
+          tag: "v9"
   
   # Deploy application to gke
   gke-deploy: 
@@ -87,7 +87,7 @@ jobs:
           deployment: planted-prod
           container: planted-prod
           image: gcr.io/circleci-demo-286921/planted-app
-          tag: v8
+          tag: v9
 
 ### Workflows ###
 workflows: 
