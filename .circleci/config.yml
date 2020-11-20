@@ -89,27 +89,46 @@ jobs:
           image: gcr.io/circleci-demo-286921/planted-app
           tag: v8
 
+ # Build and push docker image to ECR
+  aws-ecr-build: 
+    machine: true
+    resource_class: large
+    steps:
+      - aws-ecr/build-and-push-image:
+          dockerfile: Dockerfile
+          tag: v9
+          create-repo: true
+          repo: aws-circleci-demo
+
 ### Workflows ###
 workflows: 
   version: 2.1
   build_test_deploy: 
     jobs: 
       - build
+      - aws-ecr-build:
+          context: AWS
+          requires:
+            - build
+          filters:
+            branches:
+              only: feature-aws-eks
       - lint:
           requires:
             - build
+          filters:
+            branches:
+              only:
+                - main
       - test:
           requires: 
             - build
+            - lint
       - build-docker-image:
           context: GCLOUD
           requires: 
             - test
             - lint
-          filters:
-            branches:
-              only:
-                - main
       - hold-gke-deploy:
           type: approval
           requires: 
