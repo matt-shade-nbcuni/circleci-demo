@@ -124,6 +124,10 @@ workflows:
           requires: 
             - build
             - lint
+          filters:
+            branches:
+              only:
+                - main
       - build-docker-image:
           context: GCLOUD
           requires: 
