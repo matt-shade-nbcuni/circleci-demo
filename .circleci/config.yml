@@ -107,7 +107,7 @@ workflows:
     jobs: 
       - build
       - aws-ecr-build:
-          context: AWS
+          context: AWS ### aws default context change
           requires:
             - build
           filters:
