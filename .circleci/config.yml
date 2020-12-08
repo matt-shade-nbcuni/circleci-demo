@@ -96,7 +96,7 @@ jobs:
     steps:
       - aws-ecr/build-and-push-image:
           dockerfile: Dockerfile
-          tag: v9
+          tag: latest
           create-repo: true
           repo: aws-circleci-demo
 
