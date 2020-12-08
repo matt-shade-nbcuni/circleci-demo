@@ -95,7 +95,7 @@ jobs:
     resource_class: large
     steps:
       - aws-ecr/build-and-push-image:
-          dockerfile: Dockerfile
+          dockerfile: "Dockerfile"
           tag: v9
           create-repo: true
           repo: aws-circleci-demo
@@ -105,43 +105,43 @@ workflows:
   version: 2.1
   build_test_deploy: 
     jobs: 
-      - build
+      # - build
       - aws-ecr-build:
           context: AWS 
           ### aws default context change - ecr url
-          requires:
-            - build
+          # requires:
+          #   - build
           filters:
             branches:
               only: feature-aws-eks
-      - lint:
-          requires:
-            - build
-          filters:
-            branches:
-              only:
-                - main
-      - test:
-          requires: 
-            - build
-            - lint
-          filters:
-            branches:
-              only:
-                - main
-      - build-docker-image:
-          context: GCLOUD
-          requires: 
-            - test
-            - lint
-      - hold-gke-deploy:
-          type: approval
-          requires: 
-            - build-docker-image
-      - gke-deploy: 
-          context: GCLOUD
-          requires: 
-            - hold-gke-deploy
+      # - lint:
+      #     requires:
+      #       - build
+      #     filters:
+      #       branches:
+      #         only:
+      #           - main
+      # - test:
+      #     requires: 
+      #       - build
+      #       - lint
+      #     filters:
+      #       branches:
+      #         only:
+      #           - main
+      # - build-docker-image:
+      #     context: GCLOUD
+      #     requires: 
+      #       - test
+      #       - lint
+      # - hold-gke-deploy:
+      #     type: approval
+      #     requires: 
+      #       - build-docker-image
+      # - gke-deploy: 
+      #     context: GCLOUD
+      #     requires: 
+      #       - hold-gke-deploy
 
 ### Orbs ###
 orbs:
