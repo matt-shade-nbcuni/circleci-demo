@@ -95,7 +95,7 @@ jobs:
     resource_class: large
     steps:
       - aws-ecr/build-and-push-image:
-          dockerfile: "Dockerfile"
+          dockerfile: Dockerfile
           tag: v9
           create-repo: true
           repo: aws-circleci-demo
