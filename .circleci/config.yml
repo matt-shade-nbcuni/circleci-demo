@@ -108,7 +108,6 @@ workflows:
       # - build
       - aws-ecr-build:
           context: AWS 
-          ### aws default context change - ecr url
           # requires:
           #   - build
           filters:
