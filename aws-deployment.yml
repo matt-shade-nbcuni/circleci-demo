@@ -1,0 +1,21 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: demo-plant-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: demo-plant-app
+  template:
+    metadata:
+      labels:
+        app: demo-plant-app
+    spec:
+      containers:
+        - name: demo-prod-app
+          image: 532223635942.dkr.ecr.us-east-2.amazonaws.com/aws-circleci-demo:$CIRCLE_SHA1
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+      restartPolicy: Always
