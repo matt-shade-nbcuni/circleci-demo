@@ -99,6 +99,13 @@ jobs:
           tag: $CIRCLE_SHA1
           repo: aws-circleci-demo
 
+ # Build and push docker image to ECR
+  aws-create-cluster: 
+    machine: true
+    resource_class: xlarge
+    steps:
+      - aws-eks/create-cluster:
+          cluster-name: plant-demo-deployment
   # Create cluster
   # test-cluster:
   #   executor: aws-eks/python3
@@ -118,8 +125,7 @@ jobs:
 
   # Create deployment
   create-deployment:
-    docker:
-      - image: circleci/python:3.7
+    executor: aws-eks/python3
     parameters:
       cluster-name:
         description: |
@@ -128,12 +134,12 @@ jobs:
     steps:
       - checkout
       - aws-eks/update-kubeconfig-with-authenticator:
-          cluster-name: my-eks-demo
+          cluster-name: << parameters.cluster-name >>
           install-kubectl: true
       - kubernetes/create-or-update-resource:
           get-rollout-status: true
-          resource-file-path: aws-deployment.yaml
-          resource-name: deployment/app-demo-deployment
+          resource-file-path: tests/nginx-deployment/deployment.yaml
+          resource-name: deployment/nginx-deployment
 
 ### Workflows ###
 workflows: 
@@ -143,37 +149,30 @@ workflows:
       # - build
       - aws-ecr-build:
           context: AWS 
-          # requires:
-          #   - build
           filters:
             branches:
               only: feature-aws-eks
 
-      - create-deployment: 
+      - aws-create-cluster:
           context: AWS 
-          cluster-name: my-eks-demo
-          filters:
-            branches:
-              only: feature-aws-eks
-      # - aws-eks/update-container-image:
-      #     context: AWS
-      #     cluster-name: eks-demo-deployment
-      #     container-image-updates: 'nginx=nginx:1.9.1'
-      #     record: true
-      #     requires:
-      #       - create-deployment
-      #     resource-name: deployment/nginx-deployment
-      # - aws-eks/create-cluster:
-      #     context: AWS 
-      #     cluster-name: my-eks-demo
-      #     filters:
-      #       branches:
-      #         only: feature-aws-eks
-      # - test-cluster:
-      #     context: AWS 
-      #     cluster-name: my-eks-demo
-      #     requires:
-      #       - aws-eks/create-cluster        
+          requires:
+            - aws-ecr-build
+
+      - create-deployment:
+          context: AWS 
+          cluster-name: plant-demo-deployment
+          requires:
+            - aws-create-cluster
+            
+      - aws-eks/update-container-image:
+          context: AWS 
+          cluster-name: plant-demo-deployment
+          container-image-updates: 'nginx=nginx:1.9.1'
+          record: true
+          requires:
+            - create-deployment
+          resource-name: deployment/nginx-deployment              
+              
       # - lint:
       #     requires:
       #       - build
