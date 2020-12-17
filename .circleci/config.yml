@@ -128,7 +128,7 @@ jobs:
     steps:
       - checkout
       - aws-eks/update-kubeconfig-with-authenticator:
-          cluster-name: plant-cci-demo
+          cluster-name: my-eks-demo
           install-kubectl: true
       - kubernetes/create-or-update-resource:
           get-rollout-status: true
@@ -151,7 +151,7 @@ workflows:
 
       - create-deployment: 
           context: AWS 
-          cluster-name: plant-cci-demo
+          cluster-name: my-eks-demo
           filters:
             branches:
               only: feature-aws-eks
