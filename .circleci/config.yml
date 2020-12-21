@@ -102,6 +102,7 @@ jobs:
   # Deploy application to eks
   eks-deploy:
     executor: aws-eks/python3
+    resource_class: large
     parameters:
       cluster-name:
         description: |
@@ -114,7 +115,6 @@ jobs:
           aws-region: us-east-2
           install-kubectl: true
       - kubernetes/create-or-update-resource:
-          get-rollout-status: true
           resource-file-path: kubes/aws-deployment.yml
           resource-name: deployment/demo-plant-app
 
