@@ -60,7 +60,7 @@ jobs:
           path: ~/project/tests/junit.xml
 
   # Build then push docker image to gcr
-  build-docker-image: 
+  gcp-gcr-build: 
     machine: true
     resource_class: large
     steps:
@@ -89,7 +89,7 @@ jobs:
           image: gcr.io/circleci-demo-286921/planted-app
           tag: v9
 
- # Build and push docker image to ECR
+ # Build then push docker image to ECR
   aws-ecr-build: 
     machine: true
     resource_class: large
@@ -99,108 +99,51 @@ jobs:
           tag: $CIRCLE_SHA1
           repo: aws-circleci-demo
 
- # Build and push docker image to ECR
-  aws-create-cluster: 
-    machine: true
-    resource_class: xlarge
-    steps:
-      - aws-eks/create-cluster:
-          cluster-name: plant-demo-deployment
-  # Create cluster
-  # test-cluster:
-  #   executor: aws-eks/python3
-  #   parameters:
-  #     cluster-name:
-  #       description: |
-  #         Name of the EKS cluster
-  #       type: string
-  #   steps:
-  #     - kubernetes/install
-  #     - aws-eks/update-kubeconfig-with-authenticator:
-  #         cluster-name: << parameters.cluster-name >>
-  #     - run:
-  #         command: |
-  #           kubectl get services
-  #         name: Test cluster
+  # Deploy application to eks
 
-  # Create deployment
-  create-deployment:
-    executor: aws-eks/python3
-    parameters:
-      cluster-name:
-        description: |
-          Name of the EKS cluster
-        type: string
-    steps:
-      - checkout
-      - aws-eks/update-kubeconfig-with-authenticator:
-          cluster-name: << parameters.cluster-name >>
-          install-kubectl: true
-      - kubernetes/create-or-update-resource:
-          get-rollout-status: true
-          resource-file-path: tests/nginx-deployment/deployment.yaml
-          resource-name: deployment/nginx-deployment
 
 ### Workflows ###
 workflows: 
   version: 2.1
   build_test_deploy: 
     jobs: 
-      # - build
+      - build:
+          filters:
+            branches:
+              only: main   
       - aws-ecr-build:
           context: AWS 
           filters:
             branches:
-              only: feature-aws-eks
-
-      - aws-create-cluster:
-          context: AWS 
+              only: feature-aws-eks                       
+      - lint:
           requires:
-            - aws-ecr-build
-
-      - create-deployment:
-          context: AWS 
-          cluster-name: plant-demo-deployment
-          requires:
-            - aws-create-cluster
-            
-      - aws-eks/update-container-image:
-          context: AWS 
-          cluster-name: plant-demo-deployment
-          container-image-updates: 'nginx=nginx:1.9.1'
-          record: true
-          requires:
-            - create-deployment
-          resource-name: deployment/nginx-deployment              
-              
-      # - lint:
-      #     requires:
-      #       - build
-      #     filters:
-      #       branches:
-      #         only:
-      #           - main
-      # - test:
-      #     requires: 
-      #       - build
-      #       - lint
-      #     filters:
-      #       branches:
-      #         only:
-      #           - main
-      # - build-docker-image:
-      #     context: GCLOUD
-      #     requires: 
-      #       - test
-      #       - lint
-      # - hold-gke-deploy:
-      #     type: approval
-      #     requires: 
-      #       - build-docker-image
-      # - gke-deploy: 
-      #     context: GCLOUD
-      #     requires: 
-      #       - hold-gke-deploy
+            - build
+          filters:
+            branches:
+              only:
+                - main
+      - test:
+          requires: 
+            - build
+            - lint
+          filters:
+            branches:
+              only:
+                - main
+      - gcp-gcr-build:
+          context: GCLOUD
+          requires: 
+            - test
+            - lint
+      - hold-gke-deploy:
+          type: approval
+          requires: 
+            - gcp-gcr-build
+      - gke-deploy: 
+          context: GCLOUD
+          requires: 
+            - hold-gke-deploy
 
 ### Orbs ###
 orbs:
