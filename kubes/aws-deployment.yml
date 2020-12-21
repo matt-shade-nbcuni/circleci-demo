@@ -13,7 +13,7 @@ spec:
         app: demo-plant-app
     spec:
       containers:
-        - name: demo-prod-app
+        - name: demo-plant-app
           image: 532223635942.dkr.ecr.us-east-2.amazonaws.com/aws-circleci-demo:$CIRCLE_SHA1
           imagePullPolicy: Always
           ports:
