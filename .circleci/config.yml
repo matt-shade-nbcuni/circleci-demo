@@ -14,7 +14,7 @@ workflows:
             build/.* build-client true
             .circleci/.* circle-ci true
           # Optional, defaults to main:
-          base-revision: origin/main
+          base-revision: << pipeline.git.revision >>
 
 ### A CHANGE ###          
 ################################################################################################################################################
