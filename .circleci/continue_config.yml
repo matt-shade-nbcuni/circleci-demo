@@ -11,6 +11,9 @@ executors:
 
 ### Parameters ###
 parameters:
+  circle-ci:
+    type: boolean
+    default: false
   test-src:
     type: boolean
     default: false
@@ -30,16 +33,12 @@ jobs:
       - run: CYPRESS_INSTALL_BINARY=0 yarn add cypress
 
   # Setup job is apart of setup workflows (in preview)     
-  setup:
-    executor: continuation/default
+  cli:
+    executor: node
     steps:
       - checkout
-      - run:
-          name: Generate config
-          command: |
-            .circleci/primary > generate_config.yml
-      - continuation/continue:
-          configuration_path: generate_config.yml
+      - circleci-cli/install
+      - circleci-cli/setup
 
   # Lint using eslint
   lint: 
@@ -117,6 +116,14 @@ jobs:
 workflows: 
   version: 2.1
 
+  circle-ci:
+    when: << pipeline.parameters.circle-ci >>
+    jobs:
+      - build
+      - cli:
+          requires:
+            - build
+            
   test-src: 
     when: << pipeline.parameters.test-src >>
     jobs: 
@@ -166,6 +173,7 @@ orbs:
   gcp-gcr: circleci/gcp-gcr@0.7.1
   gke: circleci/gcp-gke@1.1.0
   cypress: cypress-io/cypress@1.26.0
+  circleci-cli: circleci/circleci-cli@0.1.9
 
 #### setup so src changes run only build-tests 
 #### but if build changes run all build-test-deploy ??
