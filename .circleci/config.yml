@@ -109,11 +109,11 @@ workflows:
   version: 2.1
   setup_workflow: 
     jobs: 
-      - build:
-          filters:
-            branches:
-              only:
-                - rdw/setup-workflow
+      - build
+          # filters:
+          #   branches:
+          #     only:
+          #       - rdw/setup-workflow
       # - setup: 
       #     requires:
       #       - build
