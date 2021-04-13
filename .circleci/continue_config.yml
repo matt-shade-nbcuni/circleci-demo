@@ -123,7 +123,7 @@ workflows:
       - cli:
           requires:
             - build
-            
+
   test-src: 
     when: << pipeline.parameters.test-src >>
     jobs: 
@@ -136,9 +136,6 @@ workflows:
     when: << pipeline.parameters.build-client >>
     jobs: 
       - build
-      - setup:
-          requires:
-            - build
       - lint:
           requires:
             - build
