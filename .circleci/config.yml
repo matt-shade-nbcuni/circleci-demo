@@ -107,24 +107,12 @@ jobs:
 ### Workflows ###
 workflows: 
   version: 2.1
-  # setup_workflow: 
-  #   jobs: 
-  #     - build
-  #         # filters:
-  #         #   branches:
-  #         #     only:
-  #         #       - rdw/setup-workflow
-  #     # - setup: 
-  #     #     requires:
-  #     #       - build
-
   build_test_deploy: 
     jobs: 
       - build
-          # filters:
-          #   branches:
-          #     only:
-          #       - main
+      - setup:
+          requires:
+            - build
       - lint:
           requires:
             - build
