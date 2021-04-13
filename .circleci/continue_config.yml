@@ -1,0 +1,177 @@
+version: 2.1
+
+### Setup ###
+setup: true
+
+### Executors ###
+executors:
+  node:
+    docker: 
+      - image: cimg/node:14.0.0
+
+### Parameters ###
+parameters:
+  circle-ci:
+    type: boolean
+    default: false
+  test-src:
+    type: boolean
+    default: false
+  build-client:
+    type: boolean
+    default: false
+
+### Jobs ###
+jobs:
+  # Building application yarn install & cypress install
+  build: 
+    executor:
+      name: node
+    steps:
+      - checkout
+      - run: yarn install
+      - run: CYPRESS_INSTALL_BINARY=0 yarn add cypress
+
+  # Setup job is apart of setup workflows (in preview)     
+  cli:
+    executor: node
+    steps:
+      - checkout
+      - circleci-cli/install
+
+  # Lint using eslint
+  lint: 
+    executor:
+      name: node
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - yarn-packages-v1-{{ .Branch }}-
+            - yarn-packages-v1-
+      - run: yarn install
+      - run: yarn lint
+      - save_cache:
+          paths:
+            - ~/.cache/yarn
+          key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+
+  # Cypress unit testing
+  test: 
+    docker: 
+      - image: cypress/base:10
+    parallelism: 4
+    resource_class: large
+    steps: 
+      - checkout
+      - restore_cache:
+          keys:
+            - yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - yarn-packages-v1-{{ .Branch }}-
+            - yarn-packages-v1-
+      - run: yarn install --frozen-lockfile
+      - save_cache:
+          paths:
+            - ~/.cache/yarn
+          key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run: yarn cypress run $CYPRESS_TEST
+      - store_test_results:
+          path: ~/project/tests
+      - store_artifacts:
+          path: ~/project/tests/junit.xml
+
+  # Build then push docker image to gcr
+  build-docker-image: 
+    machine: true
+    resource_class: large
+    steps:
+      - checkout
+      - gcp-gcr/gcr-auth
+      - gcp-gcr/build-image:
+          image: planted-app
+          tag: $CIRCLE_SHA1
+      - gcp-gcr/push-image:
+          image: planted-app
+          tag: $CIRCLE_SHA1
+  
+  # Deploy application to gke
+  gke-deploy: 
+    machine: true
+    resource_class: large
+    steps:
+      - gcp-gcr/gcr-auth
+      - gke/update-kubeconfig-with-credentials:
+          cluster: planted-cluster
+          install-kubectl: true
+      - gke/rollout-image:
+          cluster: planted-cluster
+          deployment: planted-prod
+          container: planted-prod
+          image: gcr.io/circleci-demo-286921/planted-app
+          tag: $CIRCLE_SHA1
+
+### Workflows ###
+workflows: 
+  version: 2.1
+
+  circle-ci:
+    when: << pipeline.parameters.circle-ci >>
+    jobs:
+      - build
+      - cli:
+          requires:
+            - build
+
+  test-src: 
+    when: << pipeline.parameters.test-src >>
+    jobs: 
+      - build
+      - lint:
+          requires:
+            - build
+
+  build_client:
+    when: << pipeline.parameters.build-client >>
+    jobs: 
+      - build
+      - lint:
+          requires:
+            - build
+      - test:
+          requires: 
+            - build
+      - build-docker-image:
+          context: GCLOUD
+          requires: 
+            - test
+            - lint
+          filters:
+            branches:
+              only:
+                - main
+      - hold-gke-deploy:
+          type: approval
+          requires: 
+            - build-docker-image
+      - gke-deploy: 
+          context: GCLOUD
+          requires: 
+            - hold-gke-deploy
+
+### Orbs ###
+orbs:
+  # Uses the Continuation API #
+  continuation: circleci/continuation@0.1.2
+  # Uses path filtering for mono support #
+  path-filtering: circleci/path-filtering@0.0.2
+
+  gcp-gcr: circleci/gcp-gcr@0.7.1
+  gke: circleci/gcp-gke@1.1.0
+  cypress: cypress-io/cypress@1.26.0
+  circleci-cli: circleci/circleci-cli@0.1.9
+
+#### setup so src changes run only build-tests 
+#### but if build changes run all build-test-deploy ??
+#### start with "stream you all over me -cowboy-" for src
+#### start with "stream don't you -sad girl-" for build
