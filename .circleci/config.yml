@@ -114,9 +114,9 @@ workflows:
             branches:
               only:
                 - rdw/setup-workflow
-      - setup: 
-          requires:
-            - build
+      # - setup: 
+      #     requires:
+      #       - build
 
   build_test_deploy: 
     jobs: 
