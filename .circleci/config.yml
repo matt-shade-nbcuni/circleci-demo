@@ -28,9 +28,9 @@ jobs:
       - run:
           name: Generate config
           command: |
-            ./generate-config > generated_config.yml
+            .circleci/primary > generate_config.yml
       - continuation/continue:
-          configuration_path: generated_config.yml
+          configuration_path: generate_config.yml
 
   # Lint using eslint
   lint: 
