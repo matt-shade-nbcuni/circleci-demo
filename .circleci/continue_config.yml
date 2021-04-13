@@ -38,7 +38,6 @@ jobs:
     steps:
       - checkout
       - circleci-cli/install
-      - circleci-cli/setup
 
   # Lint using eslint
   lint: 
