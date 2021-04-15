@@ -19,6 +19,10 @@
 ################################################################################################################################################
 version: 2.1
 
+### slack orb ###
+orbs:
+  slack: circleci/slack@4.4.0
+
 ### Setup ###
 setup: true
 
@@ -59,6 +63,13 @@ jobs:
             .circleci/primary > generate_config.yml
       - continuation/continue:
           configuration_path: generate_config.yml
+      - slack/notify:
+          event: fail
+          mentions: '@mattshade'
+          template: basic_fail_1
+      - slack/notify:
+          event: pass
+          template: success_tagged_deploy_1
 
   # Lint using eslint
   lint: 
