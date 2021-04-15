@@ -1,41 +1,41 @@
-version: 2.1
-
-setup: true
-
-orbs:
-  path-filtering: circleci/path-filtering@0.0.2
-
-workflows:
-  setup-workflow:
-    jobs:
-      - path-filtering/filter:
-          mapping: |
-            src/.* test-src true
-            build/.* build-client true
-            .circleci/.* circle-ci true
-          # Optional, defaults to main:
-          base-revision: origin/main
-
-################################################################################################################################################
 # version: 2.1
 
-# ### Setup ###
 # setup: true
 
-# ### Executors ###
-# executors:
-#   node:
-#     docker: 
-#       - image: cimg/node:14.0.0
+# orbs:
+#   path-filtering: circleci/path-filtering@0.0.2
 
-# ### Parameters ###
-# parameters:
-#   test-src:
-#     type: boolean
-#     default: false
-#   build-client:
-#     type: boolean
-#     default: false
+# workflows:
+#   setup-workflow:
+#     jobs:
+#       - path-filtering/filter:
+#           mapping: |
+#             src/.* test-src true
+#             build/.* build-client true
+#             .circleci/.* circle-ci true
+#           # Optional, defaults to main:
+#           base-revision: origin/main
+
+################################################################################################################################################
+version: 2.1
+
+### Setup ###
+setup: true
+
+### Executors ###
+executors:
+  node:
+    docker: 
+      - image: cimg/node:14.0.0
+
+### Parameters ###
+parameters:
+  test-src:
+    type: boolean
+    default: false
+  build-client:
+    type: boolean
+    default: false
 
 # ### Jobs ###
 jobs:
