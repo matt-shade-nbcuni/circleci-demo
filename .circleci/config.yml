@@ -38,45 +38,45 @@ workflows:
 #     default: false
 
 # ### Jobs ###
-# jobs:
-#   # Building application yarn install & cypress install
-#   build: 
-#     executor:
-#       name: node
-#     steps:
-#       - checkout
-#       - run: yarn install
-#       - run: CYPRESS_INSTALL_BINARY=0 yarn add cypress
+jobs:
+  # Building application yarn install & cypress install
+  build: 
+    executor:
+      name: node
+    steps:
+      - checkout
+      - run: yarn install
+      - run: CYPRESS_INSTALL_BINARY=0 yarn add cypress
 
-#   # Setup job is apart of setup workflows (in preview)     
-#   setup:
-#     executor: continuation/default
-#     steps:
-#       - checkout
-#       - run:
-#           name: Generate config
-#           command: |
-#             .circleci/primary > generate_config.yml
-#       - continuation/continue:
-#           configuration_path: generate_config.yml
+  # Setup job is apart of setup workflows (in preview)     
+  setup:
+    executor: continuation/default
+    steps:
+      - checkout
+      - run:
+          name: Generate config
+          command: |
+            .circleci/primary > generate_config.yml
+      - continuation/continue:
+          configuration_path: generate_config.yml
 
-#   # Lint using eslint
-#   lint: 
-#     executor:
-#       name: node
-#     steps:
-#       - checkout
-#       - restore_cache:
-#           keys:
-#             - yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
-#             - yarn-packages-v1-{{ .Branch }}-
-#             - yarn-packages-v1-
-#       - run: yarn install
-#       - run: yarn lint
-#       - save_cache:
-#           paths:
-#             - ~/.cache/yarn
-#           key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+  # Lint using eslint
+  lint: 
+    executor:
+      name: node
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - yarn-packages-v1-{{ .Branch }}-
+            - yarn-packages-v1-
+      - run: yarn install
+      - run: yarn lint
+      - save_cache:
+          paths:
+            - ~/.cache/yarn
+          key: yarn-packages-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
 
 #   # Cypress unit testing
 #   test: 
